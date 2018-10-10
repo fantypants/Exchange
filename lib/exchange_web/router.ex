@@ -5,7 +5,9 @@ defmodule ExchangeWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", ExchangeWeb do
+  scope "/rates", ExchangeWeb do
     pipe_through :api
+    resources "/monies", MoneyController, except: [:new, :edit]
+    get "/:type", MoneyController, :filter
   end
 end

@@ -38,6 +38,10 @@ defmodule Exchange.Mixfile do
       {:phoenix_ecto, "~> 3.2"},
       {:postgrex, ">= 0.0.0"},
       {:gettext, "~> 0.11"},
+      {:httpoison, "~> 1.0"},
+      {:sweet_xml, "~> 0.6.5"},
+      {:floki, "~> 0.20.0"},
+      {:timex, "~> 3.1"},
       {:cowboy, "~> 1.0"}
     ]
   end

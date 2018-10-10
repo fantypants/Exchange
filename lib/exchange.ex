@@ -6,4 +6,10 @@ defmodule Exchange do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
+  use Application
+
+  def start do
+      IO.puts "Running From APP"
+  end
+
 end
