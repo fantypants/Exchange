@@ -28,7 +28,7 @@ defmodule ExchangeWeb.MoneyController do
     query = from m in Money, select: m.date
     date = Repo.all(query) |> Enum.max
     collect = Repo.all(from m in Money, where: m.date == ^date)
-    monies = collect
+    monies = collect |> format_money
     render(conn, "latest.json", date: date, monies: monies)
   end
 

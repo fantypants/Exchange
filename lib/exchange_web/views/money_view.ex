@@ -11,7 +11,7 @@ defmodule ExchangeWeb.MoneyView do
 
   def render("latest.json", %{date: date, monies: monies}) do
     %{
-      date: "#{date}", base: "EUR", rates: Enum.map(monies, &monies_json/1)
+      date: "#{date}", base: "EUR", rates: Enum.map(monies, &monies_json2/1)
     }
   end
   def render("filtered.json", %{monies: monies}) do
@@ -21,7 +21,7 @@ defmodule ExchangeWeb.MoneyView do
 
   def monies_json2(money) do
   {date, list} = money
-  list |> List.flatten |> Enum.map(fn x -> %{"#{x.currency}": x.rate} end) #|> List.flatten #|> Enum.map(&monies_json/1)
+  list |> List.flatten |> Enum.reduce(%{}, fn map, acc -> Map.put(acc, map.currency, map.rate) end) #|> List.flatten #|> Enum.map(&monies_json/1)
   end
 
   def monies_json(money) do
