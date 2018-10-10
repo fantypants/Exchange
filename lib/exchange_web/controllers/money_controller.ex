@@ -13,21 +13,29 @@ defmodule ExchangeWeb.MoneyController do
   def filter(conn, %{"type" => type}) when type == "analyze", do: analyze(conn)
 
   defp format_money(money) do
-    grouped = monies |> Enum.group_by(fn x -> x.date end) |> IO.inspect
+    IO.puts "Fomratting money"
+    grouped = money |> Enum.group_by(fn x -> x.date end) |> IO.inspect
+    grouped
+  end
+
+  defp format_2(money) do
+    Enum.map(money, fn x -> %{"#{x.currency}": x.rate} end) |> IO.inspect
+
   end
 
   def latest(conn) do
     IO.puts "In latest"
     query = from m in Money, select: m.date
     date = Repo.all(query) |> Enum.max
-    monies = Repo.all(from m in Money, where: m.date == ^date)
-    render(conn, "latest.json", monies: monies)
+    collect = Repo.all(from m in Money, where: m.date == ^date)
+    monies = collect
+    render(conn, "latest.json", date: date, monies: monies)
   end
 
   def filter(conn, %{"type" => type}) do
     query = from m in Money, where: m.date == ^type
-    monies = Repo.all(query)
-    render(conn, "index.json", monies: monies)
+    monies = Repo.all(query) |> format_money
+    render(conn, "filtered.json", monies: monies)
   end
 
   defp find_avg(currency) do

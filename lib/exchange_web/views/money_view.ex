@@ -5,17 +5,29 @@ defmodule ExchangeWeb.MoneyView do
     %{data: render_many(monies, ExchangeWeb.MoneyView, "money.json")}
   end
 
-  def render("latest.json", %{monies: monies}) do
-    grouped = monies |> Enum.group_by(fn x -> x.date end) |> IO.inspect
-    %{data: render_many(monies, ExchangeWeb.MoneyView, "money.json")}
-  end
-
-  def render("filtered.json", %{monies: monies}) do
-    %{data: render_many(monies, ExchangeWeb.MoneyView, "money.json")}
-  end
-
   def render("analyze.json", %{monies: monies}) do
-    %{data: render_many(monies, ExchangeWeb.MoneyView, "analyzed.json")}
+    %{base: "EUR", rates_analyze: render_many(monies, ExchangeWeb.MoneyView, "analyzed.json")}
+  end
+
+  def render("latest.json", %{date: date, monies: monies}) do
+    %{
+      date: "#{date}", base: "EUR", rates: Enum.map(monies, &monies_json/1)
+    }
+  end
+  def render("filtered.json", %{monies: monies}) do
+    %{base: "EUR", date: "#{Map.keys(monies)}", rates: Enum.map(monies, &monies_json2/1), base: "EUR"
+    }
+  end
+
+  def monies_json2(money) do
+  {date, list} = money
+  list |> List.flatten |> Enum.map(fn x -> %{"#{x.currency}": x.rate} end) #|> List.flatten #|> Enum.map(&monies_json/1)
+  end
+
+  def monies_json(money) do
+    %{
+      "#{money.currency}": "#{money.rate}",
+    }
   end
 
   def render("show.json", %{money: money}) do
@@ -24,14 +36,13 @@ defmodule ExchangeWeb.MoneyView do
 
   def render("money.json", %{money: money}) do
 
-
     %{"#{money.date}": %{
       "#{money.currency}": money.rate}}
   end
   def render("analyzed.json", %{money: money}) do
-    %{base: "EUR", rates_analyze: %{"#{money.currency}":  %{
+    %{"#{money.currency}":  %{
       avg: money.avg,
       max: money.max,
-      min: money.min}}}
+      min: money.min}}
   end
 end
