@@ -10,9 +10,12 @@ defmodule Services.RateWorker do
     {:ok, state}
   end
   def handle_info(:work, state) do
-    # warming the caches
+    IO.puts "Setting up the Server.."
+    IO.puts "Initiating the XML request"
     {status, data} = ExchangeParser.get_xml
+    IO.puts "Inserting gathered data into Postgres.."
     ExchangeParser.insert_into_database(data)
+    IO.puts "Succesfully Finished inserting into DB"
     {:stop, :normal, state}
   end
 end

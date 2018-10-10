@@ -9,5 +9,6 @@ defmodule Exchange.Repo.Migrations.CreateMoney do
 
       timestamps()
     end
+    create unique_index(:monies, [:date, :rate, :currency], name: :uniq_fields)
   end
 end

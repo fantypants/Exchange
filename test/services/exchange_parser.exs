@@ -21,12 +21,7 @@ defmodule Exchange.Services.ExchangeParserTest do
     {status, data} = ExchangeParser.get_xml
     ExchangeParser.insert_into_database(data)
     rates = ExchangeParser.get_rates
-    #assert is_int(rates) == true
+    assert Enum.count(rates) > 0
   end
-
-  #test "GET Filtered Data /", %{conn: conn} do
-  #  conn = get conn, "/2018-10-05"
-  #  assert html_response(conn, 200) =~ "DATE CURRENCY RATE"
-  #end
 
 end

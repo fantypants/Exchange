@@ -17,5 +17,9 @@ defmodule Exchange.Models.Money do
     struct
     |> cast(params, [:rate, :date, :currency])
     |> validate_required([:rate, :date, :currency])
+    |> unique_constraint(:date, name: :uniq_fields)
+    |> unique_constraint(:currency, name: :uniq_fields)
+    |> unique_constraint(:rate, name: :uniq_fields)
+    #|> unique_constraint(:date)
   end
 end

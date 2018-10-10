@@ -43,7 +43,7 @@ defp process_raw(time, element) do
   %{date: time, currency: currency, rate: convert_rate(rate, Regex.match?(~r/[.]/, rate)), inserted_at: Timex.now, updated_at: Timex.now}
 end
 
-def insert_into_database(list), do: Repo.insert_all(Money, list, [on_conflict: :nothing])
+def insert_into_database(list), do: Enum.map(list, fn row -> ExchangeWeb.MoneyController.insert_single(row) end)
 def get_rates, do: Repo.all(Money) |> Enum.count
 
 

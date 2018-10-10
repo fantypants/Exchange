@@ -13,28 +13,20 @@ defmodule ExchangeWeb.MoneyController do
   def filter(conn, %{"type" => type}) when type == "analyze", do: analyze(conn)
 
   defp format_money(money) do
-    IO.puts "Fomratting money"
-    grouped = money |> Enum.group_by(fn x -> x.date end) |> IO.inspect
-    grouped
-  end
-
-  defp format_2(money) do
-    Enum.map(money, fn x -> %{"#{x.currency}": x.rate} end) |> IO.inspect
-
+    money |> Enum.group_by(fn x -> x.date end)
   end
 
   def latest(conn) do
-    IO.puts "In latest"
     query = from m in Money, select: m.date
     date = Repo.all(query) |> Enum.max
-    collect = Repo.all(from m in Money, where: m.date == ^date)
-    monies = collect |> format_money
+    monies = format_money(Repo.all(from m in Money, where: m.date == ^date, order_by: m.currency))
     render(conn, "latest.json", date: date, monies: monies)
   end
 
   def filter(conn, %{"type" => type}) do
-    query = from m in Money, where: m.date == ^type
-    monies = Repo.all(query) |> format_money
+    query = from m in Money, where: m.date == ^type, order_by: m.currency
+    monies = Repo.all(query)
+      |> format_money
     render(conn, "filtered.json", monies: monies)
   end
 
@@ -49,11 +41,16 @@ defmodule ExchangeWeb.MoneyController do
   end
 
   def analyze(conn) do
-    IO.puts "in analuyze"
     query = from m in Money, select: m.currency
-    currency = Repo.all(query) |> Enum.uniq |> IO.inspect
+    currency = Repo.all(query) |> Enum.uniq
     monies = Enum.map(currency, fn label -> find_avg(label) end)
     render(conn, "analyze.json", monies: monies)
+  end
+
+  def insert_single(params) do
+    money_params = %{"date" => params.date, "currency" => params.currency, "rate" => params.rate}
+    changeset = Money.changeset(%Money{}, money_params)
+    Repo.insert_or_update(changeset)
   end
 
   def create(conn, %{"money" => money_params}) do

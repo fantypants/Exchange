@@ -21,13 +21,10 @@ defmodule ExchangeWeb.MoneyView do
 
   def monies_json2(money) do
   {date, list} = money
-  list |> List.flatten |> Enum.reduce(%{}, fn map, acc -> Map.put(acc, map.currency, map.rate) end) #|> List.flatten #|> Enum.map(&monies_json/1)
-  end
-
-  def monies_json(money) do
-    %{
-      "#{money.currency}": "#{money.rate}",
-    }
+    list
+      |> Enum.reduce(%{}, fn map, acc -> Map.put(acc, map.currency, map.rate) end)
+      |> Enum.reverse
+      |> Enum.into(%{})
   end
 
   def render("show.json", %{money: money}) do
@@ -35,7 +32,6 @@ defmodule ExchangeWeb.MoneyView do
   end
 
   def render("money.json", %{money: money}) do
-
     %{"#{money.date}": %{
       "#{money.currency}": money.rate}}
   end
